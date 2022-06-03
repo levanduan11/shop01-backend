@@ -6,6 +6,7 @@ import com.shop.repository.CategoryRepository;
 import com.shop.service.ICategory;
 import com.shop.service.dto.CategoryDTO;
 import com.shop.service.dto.CategoryNode;
+import com.shop.service.dto.CategoryParentDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -115,8 +116,6 @@ public class CategoryServiceImpl implements ICategory {
     @Override
     public Optional<Category> partialUpdate(CategoryDTO categoryDTO) {
         log.info("partialUpdate category info {} ", categoryDTO);
-
-
         return categoryRepository.findById(categoryDTO.getId())
                 .map(existingCategory -> {
                     if (categoryDTO.getName() != null) {
@@ -133,14 +132,16 @@ public class CategoryServiceImpl implements ICategory {
                     }
                     if (categoryDTO.getParent_id() != null) {
                         Category parent = categoryRepository
-                                .findById(categoryDTO.getId())
+                                .findById(categoryDTO.getParent_id())
                                 .orElseThrow(CategoryNotFoundException::new);
-
                         existingCategory.setParent(parent);
+                    }else {
+                        existingCategory.setParent(null);
                     }
+                    updateUseStack(existingCategory);
                     return existingCategory;
-                })
-                .map(categoryRepository::save);
+                });
+
     }
 
     public CategoryNode getTreeForUseQueue(Category category) {
@@ -203,6 +204,63 @@ public class CategoryServiceImpl implements ICategory {
                 .map(this::getTreeForUseQueue)
                 .collect(Collectors.toList());
     }
+
+    public List<CategoryParentDTO>allTree(){
+
+        return new ArrayList<>(categoryRepository.findAllByParentIdIsNull()
+                .stream()
+                .map(this::treeCategory)
+                .reduce(new ArrayList<>(), (a, b) -> {
+                    a.addAll(b);
+                    return a;
+                }));
+    }
+
+    private List<CategoryParentDTO> treeCategory(Category root) {
+        Stack<Category> stack = new Stack<>();
+        List<CategoryParentDTO> parentDTOS = new ArrayList<>();
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            Category visit = stack.pop();
+            String name = buidName(visit);
+            CategoryParentDTO parentDTO = new CategoryParentDTO(visit, name);
+            parentDTOS.add(parentDTO);
+            Set<Category> child = visit.getChildren();
+            if (child.size() > 0) {
+                child.forEach(stack::push);
+            }
+        }
+        return parentDTOS;
+    }
+
+    private int highTree(Category from) {
+        if (from.getParent() == null) {
+            return 0;
+        }
+        int high = 0;
+        while (from.getParent() != null) {
+            high++;
+            from = from.getParent();
+        }
+        return high;
+    }
+
+    private String buidName(Category from) {
+        if (from.getParent() == null) {
+            String parentName = from.getName().replace("-", "");
+            return "-".concat(parentName);
+        }
+        StringBuilder sb = new StringBuilder();
+        int high = highTree(from);
+        String nameChild = from.getName().replace("+", "");
+        for (int i = 0; i < high; i++) {
+            sb.append("+");
+        }
+        sb.append(nameChild);
+        return sb.toString();
+    }
+
+
 
     @Override
     public Optional<Category> findOne(Long id) {

@@ -6,6 +6,7 @@ import com.shop.security.AuthoritiesConstants;
 import com.shop.service.Impl.CategoryServiceImpl;
 import com.shop.service.dto.CategoryDTO;
 import com.shop.service.dto.CategoryNode;
+import com.shop.service.dto.CategoryParentDTO;
 import com.shop.share.HeaderUtil;
 import com.shop.share.PaginationUtil;
 import com.shop.share.ResponseUtil;
@@ -132,31 +133,35 @@ public class CategoryResource {
 
     @GetMapping("/categories/all")
     @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
-    public ResponseEntity<List<CategoryDTO>> listAllCategory() {
-
-        List<CategoryDTO> categoryDTOS = categoryService
-                .findAll()
-                .stream()
-                .map(CategoryDTO::new)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(categoryDTOS);
-    }
-
-    @GetMapping("/categories/alll")
-    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
-    public ResponseEntity<List<CategoryNode>> test() {
+    public ResponseEntity<List<CategoryNode>> listAllCategory() {
 
         List<CategoryNode> CategoryNodes = categoryService.allRoot();
 
         return ResponseEntity.ok(CategoryNodes);
     }
 
-    @GetMapping("/categories/{id}")
+    @GetMapping("/categories/by-name-create")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public ResponseEntity<List<CategoryParentDTO>>listForCreate(){
+        return ResponseEntity.ok(categoryService.allTree());
+    }
+
+    @GetMapping("/category/{id}")
     @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<CategoryDTO> getCategory(@PathVariable Long id) {
         Optional<CategoryDTO> categoryDTO = categoryService.findOne(id).map(CategoryDTO::new);
         return ResponseUtil.wrapOrNotFound(categoryDTO);
 
+    }
+
+    @GetMapping("/categories/{alias}")
+    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public ResponseEntity<CategoryDTO> getByAlias(@PathVariable String alias) {
+        Optional<CategoryDTO> categoryDTO = categoryRepository
+                .findByAlias(alias)
+                .map(CategoryDTO::new);
+
+        return ResponseUtil.wrapOrNotFound(categoryDTO);
     }
 
     @DeleteMapping("/categories/{id}")

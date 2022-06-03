@@ -2,14 +2,19 @@ package com.shop.advice;
 
 import java.util.Date;
 
-public class ErrorMessage {
+public class ErrorResponseMessage{
 
     private int statusCode;
     private Date timestamp;
     private String message;
     private String description;
 
-    public ErrorMessage(int statusCode, Date timestamp, String message, String description) {
+    private String type;
+
+    public ErrorResponseMessage() {
+    }
+
+    public ErrorResponseMessage(int statusCode, Date timestamp, String message, String description) {
         this.statusCode = statusCode;
         this.timestamp = timestamp;
         this.message = message;
@@ -46,5 +51,13 @@ public class ErrorMessage {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

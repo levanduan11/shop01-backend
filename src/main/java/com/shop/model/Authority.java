@@ -10,10 +10,7 @@ import java.util.Objects;
 
 @Entity
 public class Authority extends IDBased implements Serializable {
-
     private static final long serialVersionUID=1l;
-
-
     @NotNull
     @Size(max = 50)
     @Column(length = 50)

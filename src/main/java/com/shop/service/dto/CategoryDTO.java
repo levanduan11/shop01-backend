@@ -2,9 +2,6 @@ package com.shop.service.dto;
 
 import com.shop.model.Category;
 
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class CategoryDTO {
 
@@ -13,11 +10,11 @@ public class CategoryDTO {
     private String alias;
 
     private boolean enabled;
+    private boolean hasChild;
 
     private String image;
     private Long parent_id;
 
-    private Set<String>child;
 
     public CategoryDTO() {
     }
@@ -29,11 +26,8 @@ public class CategoryDTO {
         this.enabled = category.isEnabled();
         this.image = category.getImage();
         this.parent_id = category.getParent() != null ? category.getParent().getId() : null;
-        this.child=category.getChildren()
-                .stream()
-                .filter(Objects::nonNull)
-                .map(Category::getName)
-                .collect(Collectors.toSet());
+        this.hasChild = category.getChildren().size() > 0;
+
     }
 
     public Long getId() {
@@ -84,12 +78,12 @@ public class CategoryDTO {
         this.image = image;
     }
 
-    public Set<String> getChild() {
-        return child;
+    public boolean isHasChild() {
+        return hasChild;
     }
 
-    public void setChild(Set<String> child) {
-        this.child = child;
+    public void setHasChild(boolean hasChild) {
+        this.hasChild = hasChild;
     }
 
     @Override

@@ -1,13 +1,24 @@
 package com.shop.service.dto;
 
 import com.shop.model.Category;
+import com.shop.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.Column;
+import javax.persistence.Embedded;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryManger {
 
+    @Column(nullable = false)
+    @Embedded
+    private final CategoryRepository categoryRepository;
+
+    public CategoryManger(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
     public CategoryNode getTreeForUseQueue(Category category) {
         CategoryNode node = new CategoryNode(category);
@@ -52,7 +63,67 @@ public class CategoryManger {
             }
 
         }
-       return node;
+        return node;
+    }
+
+
+    public List<CategoryParentDTO>allTree(){
+
+        return new ArrayList<>(categoryRepository.findAllByParentIdIsNull()
+                .stream()
+                .map(this::treeCategory)
+                .reduce(new ArrayList<>(), (a, b) -> {
+                    a.addAll(b);
+                    return a;
+                }));
+    }
+
+    public List<CategoryParentDTO> treeCategory(Category root) {
+        Stack<Category> stack = new Stack<>();
+        List<CategoryParentDTO> parentDTOS = new ArrayList<>();
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            Category visit = stack.pop();
+            String name = buidName(visit);
+            CategoryParentDTO parentDTO = new CategoryParentDTO(visit, name);
+            parentDTOS.add(parentDTO);
+            Set<Category> child = visit.getChildren();
+            if (child.size() > 0) {
+                child.forEach(stack::push);
+            }
+        }
+        return parentDTOS;
+    }
+
+    private int highTree(Category from) {
+        if (from.getParent() == null) {
+            return 0;
+        }
+        int high = 0;
+        while (from.getParent() != null) {
+            high++;
+            from = from.getParent();
+        }
+        return high;
+    }
+
+    private String buidName(Category from) {
+        if (from.getParent() == null) {
+            String parentName = from.getName().replace("-", "");
+            return "-".concat(parentName);
+        }
+        StringBuilder sb = new StringBuilder();
+        int high = highTree(from);
+        String nameChild = from.getName().replace("+", "");
+        for (int i = 0; i < high; i++) {
+            sb.append("+");
+        }
+        sb.append(nameChild);
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        UUID.randomUUID().toString();
     }
 
 

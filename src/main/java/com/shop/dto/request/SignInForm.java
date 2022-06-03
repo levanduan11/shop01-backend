@@ -1,9 +1,15 @@
 package com.shop.dto.request;
 
+import javax.persistence.CascadeType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
 public class SignInForm {
 
     private String username;
     private String password;
+
 
     public SignInForm() {
     }

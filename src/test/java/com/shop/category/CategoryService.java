@@ -3,6 +3,7 @@ package com.shop.category;
 import com.shop.model.Category;
 import com.shop.service.Impl.CategoryServiceImpl;
 import com.shop.service.dto.CategoryManger;
+import com.shop.service.dto.CategoryParentDTO;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,11 @@ public class CategoryService {
         Category c=service.findOne(1l).get();
       //  manger.insert(c);
         System.out.println(c);
+    }
+    @Test
+    public void listAll(){
+        List<CategoryParentDTO>parentDTOS=manger.allTree();
+        parentDTOS.forEach(System.out::println);
     }
 
     @Test
