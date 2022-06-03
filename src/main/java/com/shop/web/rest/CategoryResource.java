@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/admin")
+@CrossOrigin(origins = "*")
 public class CategoryResource {
 
     private final static Logger log = LoggerFactory.getLogger(CategoryResource.class);
@@ -70,10 +71,13 @@ public class CategoryResource {
                 .body(newCategory);
     }
 
-    @PutMapping("/categories")
+    @PutMapping("/categories/{id}")
     @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
-    public ResponseEntity<Category> updateCategory(@RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<Category> updateCategory(@PathVariable(required = false,value = "id")final Long id,@RequestBody CategoryDTO categoryDTO) {
         log.info("update category request {} ", categoryDTO);
+        if (!categoryRepository.existsById(id)){
+            throw new BadRequestAlertException("not found category");
+        }
         Optional<Category> existingCategory = categoryRepository.findByName(categoryDTO.getName());
         if (existingCategory.isPresent() && !checkIdExistsForUpdate(existingCategory, categoryDTO)) {
             throw new CategoryNameAlreadyUsedException();

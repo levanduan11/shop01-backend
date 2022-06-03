@@ -3,6 +3,7 @@ package com.shop.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,7 +14,8 @@ import java.util.Set;
                 @NamedEntityGraph(name = "com.shop.category", attributeNodes = @NamedAttributeNode(value = "children"))
         }
 )
-public class Category extends IDBased {
+public class Category extends IDBased implements Serializable {
+    private static final long serialVersionUID=1l;
     @Column(nullable = false, unique = true)
     private String name;
     @Column( unique = true)
