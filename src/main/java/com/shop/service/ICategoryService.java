@@ -6,7 +6,7 @@ import com.shop.service.dto.CategoryDTO;
 import java.util.List;
 import java.util.Optional;
 
-public interface ICategory {
+public interface ICategoryService {
     Category create(CategoryDTO categoryDTO);
 
     Optional<Category> update(CategoryDTO category);

@@ -1,5 +1,8 @@
 package com.shop.service.Impl;
 
+import com.shop.errors.EmailAlreadyUsedException;
+import com.shop.errors.InvalidPasswordException;
+import com.shop.errors.UsernameAlreadyUsedException;
 import com.shop.model.Authority;
 import com.shop.model.User;
 import com.shop.repository.AuthorityRepository;

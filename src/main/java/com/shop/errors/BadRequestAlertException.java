@@ -1,4 +1,4 @@
-package com.shop.web.rest.errors;
+package com.shop.errors;
 
 public class BadRequestAlertException extends RuntimeException{
 

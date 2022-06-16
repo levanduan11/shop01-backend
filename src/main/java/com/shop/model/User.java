@@ -1,7 +1,6 @@
 package com.shop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
 
@@ -16,11 +15,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 @Entity
-
 public class User extends IDBased implements Serializable {
 
-    private final static long serialVersionUID = 1l;
-
+    private final static long serialVersionUID = 1L;
 
     @NotNull
     @Size(min = 1,max = 50)

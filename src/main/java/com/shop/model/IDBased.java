@@ -1,7 +1,5 @@
 package com.shop.model;
 
-import lombok.Data;
-
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;

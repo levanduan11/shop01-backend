@@ -1,16 +1,15 @@
 package com.shop.model;
 
-import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Objects;
+
 
 @Entity
 public class Authority extends IDBased implements Serializable {
-    private static final long serialVersionUID=1l;
+    private static final long serialVersionUID= 1L;
     @NotNull
     @Size(max = 50)
     @Column(length = 50)

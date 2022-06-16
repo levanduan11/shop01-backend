@@ -47,8 +47,11 @@ public class CategoryRepo {
 
     @Test
     public void fetch(){
-        Optional<Category>category=categoryRepository.findByName("Electronics");
-        System.out.println(category.get());
+//        Optional<Category>category=categoryRepository.findByName("Electronics");
+//        System.out.println(category.get().getChildren());
+     //   System.out.println(category.get().getChildren());
+        List<Category>categories=categoryRepository.findAllByParentIdIsNull();
+       categories.forEach(x-> System.out.println(x.getChildren()));
     }
 
     private void updateRecursion(Category root) {

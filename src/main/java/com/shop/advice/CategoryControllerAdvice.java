@@ -1,7 +1,7 @@
 package com.shop.advice;
 
-import com.shop.web.rest.errors.CategoryAliasAlreadyUsedException;
-import com.shop.web.rest.errors.CategoryNameAlreadyUsedException;
+import com.shop.errors.CategoryAliasAlreadyUsedException;
+import com.shop.errors.CategoryNameAlreadyUsedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;

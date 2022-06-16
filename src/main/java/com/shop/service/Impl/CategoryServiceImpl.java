@@ -3,7 +3,7 @@ package com.shop.service.Impl;
 import com.shop.errors.CategoryNotFoundException;
 import com.shop.model.Category;
 import com.shop.repository.CategoryRepository;
-import com.shop.service.ICategory;
+import com.shop.service.ICategoryService;
 import com.shop.service.dto.CategoryDTO;
 import com.shop.service.dto.CategoryNode;
 import com.shop.service.dto.CategoryParentDTO;
@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class CategoryServiceImpl implements ICategory {
+public class CategoryServiceImpl implements ICategoryService {
     private final Logger log = LoggerFactory.getLogger(CategoryServiceImpl.class);
     private final CategoryRepository categoryRepository;
 
@@ -54,30 +54,37 @@ public class CategoryServiceImpl implements ICategory {
         return categoryRepository
                 .findById(categoryDTO.getId())
                 .map(category -> {
-                    if (categoryDTO.getName() != null) {
-                        category.setName(categoryDTO.getName());
-                    }
-                    if (categoryDTO.getAlias() != null) {
-                        category.setAlias(categoryDTO.getAlias());
-                    }
-
-                    if (categoryDTO.getImage() != null) {
-                        category.setImage(categoryDTO.getImage());
-                    }
+                    category.setName(categoryDTO.getName());
+                    category.setAlias(categoryDTO.getAlias());
+                    category.setImage(categoryDTO.getImage());
                     category.setEnabled(categoryDTO.isEnabled());
                     Long parentId = categoryDTO.getParent_id();
-                    if (parentId != null) {
-                        Category parent = categoryRepository.findById(parentId)
-                                .orElseThrow(CategoryNotFoundException::new);
-                        category.setParent(parent);
+                    Category oldParent = category.getParent();
+
+                    if (checkNotEqualsParent(oldParent, parentId)) {
+                        if (parentId != null) {
+                            Category parent = categoryRepository.findById(parentId)
+                                    .orElseThrow(CategoryNotFoundException::new);
+                            category.setParent(parent);
+                        } else {
+                            category.setParent(null);
+                        }
+                        updateUseStack(category);
                     } else {
-                        category.setParent(null);
+                        categoryRepository.save(category);
                     }
                     log.info("updated category {} ", category);
-                    updateUseStack(category);
                     return category;
                 });
 
+    }
+
+
+    private boolean checkNotEqualsParent(Category parent, Long dtoId) {
+        if (parent == null && dtoId == null) {
+            return false;
+        }
+        return parent == null || !Objects.equals(parent.getId(), dtoId);
     }
 
     private void updateUseStack(Category root) {
@@ -130,23 +137,26 @@ public class CategoryServiceImpl implements ICategory {
                     if (categoryDTO.isEnabled()) {
                         existingCategory.setEnabled(categoryDTO.isEnabled());
                     }
-                    if (categoryDTO.getParent_id() != null) {
-                        Category parent = categoryRepository
-                                .findById(categoryDTO.getParent_id())
-                                .orElseThrow(CategoryNotFoundException::new);
-                        existingCategory.setParent(parent);
-                    }else {
-                        existingCategory.setParent(null);
+                    Long parentId = categoryDTO.getParent_id();
+                    Category oldParent = existingCategory.getParent();
+                    if (checkNotEqualsParent(oldParent, parentId)) {
+                        if (categoryDTO.getParent_id() != null) {
+                            Category parent = categoryRepository
+                                    .findById(categoryDTO.getParent_id())
+                                    .orElseThrow(CategoryNotFoundException::new);
+                            existingCategory.setParent(parent);
+                        } else {
+                            existingCategory.setParent(null);
+                        }
+                        updateUseStack(existingCategory);
                     }
-                    updateUseStack(existingCategory);
                     return existingCategory;
                 });
 
     }
 
-    public CategoryNode getTreeForUseQueue(Category category) {
+    private CategoryNode getTreeForUseQueue(Category category) {
         CategoryNode node = new CategoryNode(category);
-
         Queue<Category> categories = new LinkedList<>();
         Set<Category> categories1 = category.getChildren();
         TreeSet<Category> categories2 = new TreeSet<>(Comparator.comparing(Category::getName));
@@ -169,7 +179,6 @@ public class CategoryServiceImpl implements ICategory {
             Category ca = categories.poll();
             CategoryNode caNode = categoryNodes.poll();
             Set<Category> child = ca.getChildren();
-
             TreeSet<Category> child2 = new TreeSet<>(Comparator.comparing(Category::getName));
             child2.addAll(child);
 
@@ -192,7 +201,6 @@ public class CategoryServiceImpl implements ICategory {
         return node;
     }
 
-
     @Override
     public List<Category> findAll() {
         return categoryRepository.findAll();
@@ -201,14 +209,16 @@ public class CategoryServiceImpl implements ICategory {
     public List<CategoryNode> allRoot() {
         return categoryRepository.findAllByParentIdIsNull()
                 .stream()
+                .sorted(Comparator.comparing(Category::getName))
                 .map(this::getTreeForUseQueue)
                 .collect(Collectors.toList());
     }
 
-    public List<CategoryParentDTO>allTree(){
+    public List<CategoryParentDTO> allTree() {
 
         return new ArrayList<>(categoryRepository.findAllByParentIdIsNull()
                 .stream()
+                .sorted(Comparator.comparing(Category::getName))
                 .map(this::treeCategory)
                 .reduce(new ArrayList<>(), (a, b) -> {
                     a.addAll(b);
@@ -222,7 +232,7 @@ public class CategoryServiceImpl implements ICategory {
         stack.push(root);
         while (!stack.isEmpty()) {
             Category visit = stack.pop();
-            String name = buidName(visit);
+            String name = buildName(visit);
             CategoryParentDTO parentDTO = new CategoryParentDTO(visit, name);
             parentDTOS.add(parentDTO);
             Set<Category> child = visit.getChildren();
@@ -245,7 +255,7 @@ public class CategoryServiceImpl implements ICategory {
         return high;
     }
 
-    private String buidName(Category from) {
+    private String buildName(Category from) {
         if (from.getParent() == null) {
             String parentName = from.getName().replace("-", "");
             return "-".concat(parentName);
@@ -259,8 +269,6 @@ public class CategoryServiceImpl implements ICategory {
         sb.append(nameChild);
         return sb.toString();
     }
-
-
 
     @Override
     public Optional<Category> findOne(Long id) {

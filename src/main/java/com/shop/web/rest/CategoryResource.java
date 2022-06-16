@@ -10,9 +10,9 @@ import com.shop.service.dto.CategoryParentDTO;
 import com.shop.share.HeaderUtil;
 import com.shop.share.PaginationUtil;
 import com.shop.share.ResponseUtil;
-import com.shop.web.rest.errors.BadRequestAlertException;
-import com.shop.web.rest.errors.CategoryAliasAlreadyUsedException;
-import com.shop.web.rest.errors.CategoryNameAlreadyUsedException;
+import com.shop.errors.BadRequestAlertException;
+import com.shop.errors.CategoryAliasAlreadyUsedException;
+import com.shop.errors.CategoryNameAlreadyUsedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdoc.api.annotations.ParameterObject;
@@ -29,10 +29,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/admin")
@@ -73,9 +70,9 @@ public class CategoryResource {
 
     @PutMapping("/categories/{id}")
     @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
-    public ResponseEntity<Category> updateCategory(@PathVariable(required = false,value = "id")final Long id,@RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<Category> updateCategory(@PathVariable(required = false, value = "id") final Long id, @RequestBody CategoryDTO categoryDTO) {
         log.info("update category request {} ", categoryDTO);
-        if (!categoryRepository.existsById(id)){
+        if (!categoryRepository.existsById(id)) {
             throw new BadRequestAlertException("not found category");
         }
         Optional<Category> existingCategory = categoryRepository.findByName(categoryDTO.getName());
@@ -87,6 +84,8 @@ public class CategoryResource {
             throw new CategoryAliasAlreadyUsedException();
         }
         Optional<Category> category = categoryService.update(categoryDTO);
+
+
         return ResponseUtil
                 .wrapOrNotFound(category, HeaderUtil.createAlert(applicationName, "category.updated", categoryDTO.getId().toString()));
 
@@ -123,7 +122,6 @@ public class CategoryResource {
     @GetMapping("/categories")
     @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<List<CategoryDTO>> listByPage(@ParameterObject Pageable pageable) {
-
         log.debug("request get all list category ");
         UriComponentsBuilder builder = ServletUriComponentsBuilder.fromCurrentRequest();
         log.debug("uri=====>>>> {} ", builder.toUriString());
@@ -138,15 +136,13 @@ public class CategoryResource {
     @GetMapping("/categories/all")
     @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<List<CategoryNode>> listAllCategory() {
-
         List<CategoryNode> CategoryNodes = categoryService.allRoot();
-
         return ResponseEntity.ok(CategoryNodes);
     }
 
     @GetMapping("/categories/by-name-create")
     @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
-    public ResponseEntity<List<CategoryParentDTO>>listForCreate(){
+    public ResponseEntity<List<CategoryParentDTO>> listForCreate() {
         return ResponseEntity.ok(categoryService.allTree());
     }
 
@@ -164,7 +160,6 @@ public class CategoryResource {
         Optional<CategoryDTO> categoryDTO = categoryRepository
                 .findByAlias(alias)
                 .map(CategoryDTO::new);
-
         return ResponseUtil.wrapOrNotFound(categoryDTO);
     }
 
@@ -172,12 +167,10 @@ public class CategoryResource {
     @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.delete(id);
-
         return ResponseEntity
                 .noContent()
                 .headers(HeaderUtil.createAlert(applicationName, ENTITY_NAME, id.toString()))
                 .build();
-
     }
 
 

@@ -15,7 +15,7 @@ import java.util.Set;
         }
 )
 public class Category extends IDBased implements Serializable {
-    private static final long serialVersionUID=1l;
+    private static final long serialVersionUID= 1L;
     @Column(nullable = false, unique = true)
     private String name;
     @Column( unique = true)
@@ -28,7 +28,7 @@ public class Category extends IDBased implements Serializable {
     @JoinColumn(name = "parent_id")
     private Category parent;
 
-    @OneToMany(mappedBy = "parent",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "parent")
     @JsonIgnore
     private Set<Category> children = new HashSet<>();
 
@@ -97,4 +97,5 @@ public class Category extends IDBased implements Serializable {
     public String toString() {
         return name;
     }
+
 }

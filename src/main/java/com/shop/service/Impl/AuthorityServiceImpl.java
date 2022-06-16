@@ -3,7 +3,6 @@ package com.shop.service.Impl;
 import com.shop.model.Authority;
 import com.shop.repository.AuthorityRepository;
 import com.shop.service.IAuthorityService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

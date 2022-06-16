@@ -1,6 +1,9 @@
 package com.shop.web.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shop.errors.EmailAlreadyUsedException;
+import com.shop.errors.InvalidPasswordException;
+import com.shop.errors.UsernameAlreadyUsedException;
 import com.shop.model.Authority;
 import com.shop.model.User;
 import com.shop.repository.UserRepository;
@@ -11,7 +14,6 @@ import com.shop.security.jwt.JwtProvider;
 import com.shop.security.userprincal.UserDetailServiceImpl;
 import com.shop.service.Impl.*;
 import com.shop.service.dto.AdminUserDTO;
-import com.shop.service.dto.CategoryDTO;
 import com.shop.web.rest.vm.ChangeImageUrlVM;
 import com.shop.web.rest.vm.ManagedUserVM;
 import org.slf4j.Logger;
@@ -66,11 +68,7 @@ public class AccountResource {
         this.userDetailServices = userDetailServices;
     }
 
-    @PostMapping("/test")
-    public String test(@RequestBody CategoryDTO categoryDTO){
-        System.out.println(99);
-        return categoryDTO.toString();
-    }
+
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -95,8 +93,6 @@ public class AccountResource {
         responseMessage.put("username", usernameDuplicate);
         responseMessage.put("email", emailDuplicate);
         new ObjectMapper().writeValue(response.getOutputStream(), responseMessage);
-
-
     }
 
     @GetMapping("/login")

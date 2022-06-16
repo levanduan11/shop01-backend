@@ -25,6 +25,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Boolean existsByAlias(String alias);
 
+    @EntityGraph(attributePaths = {"children"})
     List<Category> findAllByParentIdIsNull();
 
     Page<Category>findAll(Pageable pageable);
