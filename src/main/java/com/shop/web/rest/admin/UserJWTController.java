@@ -1,5 +1,6 @@
-package com.shop.web.rest;
+package com.shop.web.rest.admin;
 
+import com.shop.errors.AccountInvalidException;
 import com.shop.security.jwt.JwtProvider;
 import com.shop.web.rest.vm.LoginVM;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,7 +29,10 @@ public class UserJWTController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginVM vm) {
+    public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginVM vm, Errors errors) {
+        if (errors.hasErrors()){
+           throw new AccountInvalidException();
+        }
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(vm.getUsername(), vm.getPassword());
 
         Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);

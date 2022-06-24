@@ -41,40 +41,52 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        if (request.getServletPath().equals("/api/token/refresh") ||
-                (request.getServletPath().equals("/api/login") &&
-                        request.getMethod().equalsIgnoreCase("post"))) {
-            filterChain.doFilter(request, response);
-
-        } else {
-            try {
-                String token = getJwt(request);
-                if (StringUtils.hasText(token) && jwtProvider.validateToken(token, response)) {
-//                String username = jwtProvider.getUsernameFromToken(token);
-//                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+//        if (request.getServletPath().equals("/api/token/refresh") ||
+//                (request.getServletPath().equals("/api/login") &&
+//                        request.getMethod().equalsIgnoreCase("post"))) {
+//            filterChain.doFilter(request, response);
 //
-//                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-//                        userDetails, null, userDetails.getAuthorities()
-//                );
-//                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-                    Authentication authentication = jwtProvider.getAuthentication(token);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
-
-            } catch (Exception e) {
-                log.error("Can't set user authentication -> Message: {}", e.getMessage());
-                response.setHeader("error", e.getMessage());
-                response.setStatus(FORBIDDEN.value());
-                Map<String, String> error = new HashMap<>();
-                error.put("error_message", e.getMessage());
-                response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), error);
-            }
-            filterChain.doFilter(request, response);
+//        } else {
+//            try {
+//                String token = getJwt(request);
+//                if (StringUtils.hasText(token) && jwtProvider.validateToken(token, response)) {
+////                String username = jwtProvider.getUsernameFromToken(token);
+////                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+////
+////                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+////                        userDetails, null, userDetails.getAuthorities()
+////                );
+////                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+////                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+//
+//                    Authentication authentication = jwtProvider.getAuthentication(token);
+//                    SecurityContextHolder.getContext().setAuthentication(authentication);
+//                }
+//
+//            } catch (Exception e) {
+//                log.error("Can't set user authentication -> Message: {}", e.getMessage());
+//                response.setHeader("error", e.getMessage());
+//                response.setStatus(FORBIDDEN.value());
+//                Map<String, String> error = new HashMap<>();
+//                error.put("error_message", e.getMessage());
+//                response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
+//                new ObjectMapper().writeValue(response.getOutputStream(), error);
+//            }
+//            filterChain.doFilter(request, response);
+//        }
+//        if (request.getServletPath().equals("api/client")) {
+//            filterChain.doFilter(request, response);
+//
+//        } else {
+//
+//        }
+        String jwt = getJwt(request);
+        if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt, response)) {
+            Authentication authentication = jwtProvider.getAuthentication(jwt);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
+        filterChain.doFilter(request, response);
 
     }
 

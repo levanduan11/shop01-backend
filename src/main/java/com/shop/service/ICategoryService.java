@@ -1,7 +1,7 @@
 package com.shop.service;
 
 import com.shop.model.Category;
-import com.shop.service.dto.CategoryDTO;
+import com.shop.service.dto.category.CategoryDTO;
 
 import java.util.List;
 import java.util.Optional;

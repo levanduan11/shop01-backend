@@ -22,7 +22,7 @@ public class Category extends IDBased implements Serializable {
     private String alias;
     private String image;
     private boolean enabled = true;
-    private String AllParentId;
+    private String allParentId;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
@@ -70,11 +70,11 @@ public class Category extends IDBased implements Serializable {
     }
 
     public String getAllParentId() {
-        return AllParentId;
+        return allParentId;
     }
 
     public void setAllParentId(String allParentId) {
-        AllParentId = allParentId;
+        this.allParentId = allParentId;
     }
 
     public Category getParent() {

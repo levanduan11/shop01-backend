@@ -1,12 +1,12 @@
-package com.shop.web.rest;
+package com.shop.web.rest.admin;
 
 import com.shop.model.Category;
 import com.shop.repository.CategoryRepository;
 import com.shop.security.AuthoritiesConstants;
 import com.shop.service.Impl.CategoryServiceImpl;
-import com.shop.service.dto.CategoryDTO;
-import com.shop.service.dto.CategoryNode;
-import com.shop.service.dto.CategoryParentDTO;
+import com.shop.service.dto.category.CategoryDTO;
+import com.shop.service.dto.category.CategoryNode;
+import com.shop.service.dto.category.CategoryParentDTO;
 import com.shop.share.HeaderUtil;
 import com.shop.share.PaginationUtil;
 import com.shop.share.ResponseUtil;

@@ -32,6 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtEntryPoint jwtEntryPoint;
 
+
     public WebSecurityConfig(UserDetailServiceImpl userDetailServices, JwtEntryPoint jwtEntryPoint) {
         this.userDetailServices = userDetailServices;
         this.jwtEntryPoint = jwtEntryPoint;
@@ -62,10 +63,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
-                .authorizeRequests().antMatchers("/api/register/**", "/api/login/**", "/api/token/refresh/**").permitAll()
+                .authorizeRequests()
+                .antMatchers("/api/register/**").permitAll()
+                .antMatchers("/api/login/**").permitAll()
+                .antMatchers("/api/token/refresh/**").permitAll()
+                .antMatchers("/api/client/**").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling()
                 .authenticationEntryPoint(jwtEntryPoint)
+                .accessDeniedHandler(jwtEntryPoint)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

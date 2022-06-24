@@ -13,8 +13,16 @@ import java.util.Set;
 
 @Entity
 @Table(name = "products")
+@NamedEntityGraphs(
+        {@NamedEntityGraph(name = "product.list",
+                            attributeNodes = {@NamedAttributeNode("category"),
+                                    @NamedAttributeNode("brand"),
+                                    @NamedAttributeNode("images"),
+                                    @NamedAttributeNode("details")})}
+
+)
 public class Product extends IDBased implements Serializable {
-    private static final long serialVersionUID= 1L;
+    private static final long serialVersionUID = 1L;
 
     @Column(unique = true, nullable = false, length = 255)
     private String name;
@@ -29,7 +37,7 @@ public class Product extends IDBased implements Serializable {
     private String fullDescription;
     private Instant createdTime = Instant.now();
     private Instant updatedTime;
-    private boolean enabled=true;
+    private boolean enabled = true;
     private boolean inStock;
     private double cost;
     private double price;
@@ -53,13 +61,13 @@ public class Product extends IDBased implements Serializable {
     @JsonIgnore
     private Brand brand;
 
-    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private Set<ProductImage>images=new HashSet<>();
+    private Set<ProductImage> images = new HashSet<>();
 
-    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private Set<ProductDetail>details=new HashSet<>();
+    private Set<ProductDetail> details = new HashSet<>();
 
 
     public String getName() {
@@ -222,15 +230,15 @@ public class Product extends IDBased implements Serializable {
         this.details = details;
     }
 
-    public void addExtraImage(String image){
-        ProductImage productImage=new ProductImage();
+    public void addExtraImage(String image) {
+        ProductImage productImage = new ProductImage();
         productImage.setName(image);
         productImage.setProduct(this);
         getImages().add(productImage);
     }
 
-    public void addDetail(String name,String value){
-        ProductDetail productDetail=new ProductDetail();
+    public void addDetail(String name, String value) {
+        ProductDetail productDetail = new ProductDetail();
         productDetail.setProduct(this);
         productDetail.setName(name);
         productDetail.setValue(value);

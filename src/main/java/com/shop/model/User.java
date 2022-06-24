@@ -21,8 +21,7 @@ public class User extends IDBased implements Serializable {
 
     @NotNull
     @Size(min = 1,max = 50)
-    @Column(length = 50,unique = true,nullable = false)
-
+    @Column(length = 50,nullable = false,unique = true)
     private String username;
 
     @JsonIgnore
@@ -33,7 +32,7 @@ public class User extends IDBased implements Serializable {
 
     @Email
     @Size(min = 5,max = 254)
-    @Column(length = 254,unique = true)
+    @Column(length = 254,nullable = false,unique = true)
     private String email;
     @Size(max = 50)
     @Column(length = 50)

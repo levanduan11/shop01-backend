@@ -10,8 +10,9 @@ import com.shop.repository.UserRepository;
 import com.shop.security.AuthoritiesConstants;
 import com.shop.security.SecurityUtils;
 import com.shop.service.IUserService;
-import com.shop.service.dto.AdminUserDTO;
-import com.shop.service.dto.UserDTO;
+import com.shop.service.dto.user.AdminUserDTO;
+import com.shop.service.dto.user.ProfileDTO;
+import com.shop.service.dto.user.UserDTO;
 import com.shop.web.rest.vm.ManagedUserVM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -233,6 +234,25 @@ public class UserServiceImpl implements IUserService {
                     user.setImageUrl(imageUrl);
                     userRepository.save(user);
                     log.debug("changed information for user {}", user);
+                });
+    }
+
+    public void updateProfile(ProfileDTO profileDTO) {
+        SecurityUtils
+                .getCurrentUserLogin()
+                .flatMap(userRepository::findByUsername)
+                .ifPresent(user -> {
+                    user.setFirstName(profileDTO.getFirstName());
+                    user.setLastName(profileDTO.getLastName());
+                    if (profileDTO.getEmail() != null) {
+                        user.setEmail(profileDTO.getEmail().toLowerCase());
+                    }
+                    if (profileDTO.getUsername() != null) {
+                        user.setUsername(profileDTO.getUsername().toLowerCase());
+                    }
+                    user.setImageUrl(profileDTO.getImageUrl());
+                    userRepository.save(user);
+                    log.debug("change profile user {} ", user);
                 });
     }
 

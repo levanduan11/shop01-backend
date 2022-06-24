@@ -1,4 +1,4 @@
-package com.shop.service.dto;
+package com.shop.service.dto.category;
 
 import com.shop.model.Category;
 import com.shop.repository.CategoryRepository;
@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class CategoryManger {

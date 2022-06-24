@@ -1,4 +1,4 @@
-package com.shop.service.dto;
+package com.shop.service.dto.user;
 
 import com.shop.model.User;
 

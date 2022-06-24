@@ -4,9 +4,10 @@ import com.shop.errors.CategoryNotFoundException;
 import com.shop.model.Category;
 import com.shop.repository.CategoryRepository;
 import com.shop.service.ICategoryService;
-import com.shop.service.dto.CategoryDTO;
-import com.shop.service.dto.CategoryNode;
-import com.shop.service.dto.CategoryParentDTO;
+import com.shop.service.dto.category.CategoryClientDTO;
+import com.shop.service.dto.category.CategoryDTO;
+import com.shop.service.dto.category.CategoryNode;
+import com.shop.service.dto.category.CategoryParentDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -224,6 +225,13 @@ public class CategoryServiceImpl implements ICategoryService {
                     a.addAll(b);
                     return a;
                 }));
+    }
+
+    public List<CategoryClientDTO> forDisplayClient() {
+        return categoryRepository.findAllByParentIdIsNull()
+                .stream()
+                .map(CategoryClientDTO::new)
+                .collect(Collectors.toList());
     }
 
     private List<CategoryParentDTO> treeCategory(Category root) {

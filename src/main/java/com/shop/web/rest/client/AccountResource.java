@@ -1,4 +1,4 @@
-package com.shop.web.rest;
+package com.shop.web.rest.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shop.errors.EmailAlreadyUsedException;
@@ -13,7 +13,8 @@ import com.shop.security.jwt.JwtProvider;
 
 import com.shop.security.userprincal.UserDetailServiceImpl;
 import com.shop.service.Impl.*;
-import com.shop.service.dto.AdminUserDTO;
+import com.shop.service.dto.user.AdminUserDTO;
+import com.shop.service.dto.user.ProfileDTO;
 import com.shop.web.rest.vm.ChangeImageUrlVM;
 import com.shop.web.rest.vm.ManagedUserVM;
 import org.slf4j.Logger;
@@ -69,30 +70,13 @@ public class AccountResource {
     }
 
 
-
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public void registerAccount(@Valid @RequestBody ManagedUserVM userVM, HttpServletResponse response) throws IOException {
         if (isPasswordLengthInvalid(userVM.getPassword())) {
             throw new InvalidPasswordException();
         }
-        String usernameDuplicate = "";
-        String emailDuplicate = "";
-        try {
-            if (userVM.getImageUrl() == null) {
-                userVM.setImageUrl(DEFAULT_IMAGE_URL);
-            }
-            userService.registerUer(userVM, userVM.getPassword());
-        } catch (UsernameAlreadyUsedException e) {
-            usernameDuplicate = e.getMessage();
-
-        } catch (EmailAlreadyUsedException e) {
-            emailDuplicate = e.getMessage();
-        }
-        Map<String, String> responseMessage = new HashMap<>();
-        responseMessage.put("username", usernameDuplicate);
-        responseMessage.put("email", emailDuplicate);
-        new ObjectMapper().writeValue(response.getOutputStream(), responseMessage);
+        userService.registerUer(userVM, userVM.getPassword());
     }
 
     @GetMapping("/login")
@@ -138,6 +122,25 @@ public class AccountResource {
                 userDTO.getEmail(),
                 userDTO.getImageUrl()
         );
+    }
+
+    @PutMapping("/profile")
+    public void changeProfile(@RequestBody ProfileDTO profileDTO) {
+        log.debug("request change profile {} ", profileDTO);
+        Optional<User> existingUser = userRepository.findByUsername(profileDTO.getUsername());
+        if (existingUser.isPresent() && !checkId(existingUser, profileDTO)) {
+            throw new UsernameAlreadyUsedException();
+        }
+        existingUser = userRepository.findByEmail(profileDTO.getEmail());
+        if (existingUser.isPresent() && !checkId(existingUser, profileDTO)) {
+            throw new EmailAlreadyUsedException();
+        }
+        userService.updateProfile(profileDTO);
+
+    }
+
+    public boolean checkId(Optional<User> existingUser, ProfileDTO profileDTO) {
+        return Objects.equals(existingUser.get().getId(), profileDTO.getId());
     }
 
     @PutMapping("/change-image")
@@ -196,7 +199,6 @@ public class AccountResource {
                         password.length() > ManagedUserVM.PASSWORD_MAX_LENGTH
         );
     }
-
 
 
 }

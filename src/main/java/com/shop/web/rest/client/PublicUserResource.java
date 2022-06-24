@@ -1,4 +1,4 @@
-package com.shop.web.rest;
+package com.shop.web.rest.client;
 
 import com.shop.service.Impl.UserServiceImpl;
 import org.slf4j.Logger;

@@ -1,6 +1,6 @@
 package com.shop.web.rest.vm;
 
-import com.shop.service.dto.AdminUserDTO;
+import com.shop.service.dto.user.AdminUserDTO;
 
 import javax.validation.constraints.Size;
 

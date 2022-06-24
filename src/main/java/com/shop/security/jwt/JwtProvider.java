@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Component
 public class JwtProvider {
@@ -76,7 +76,7 @@ public class JwtProvider {
     }
 
     public boolean validateToken(String token, HttpServletResponse response) throws IOException {
-        String mess = "";
+        String mess;
         try {
             Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token);
             return true;
@@ -96,12 +96,11 @@ public class JwtProvider {
         }
         if (!mess.equals("")) {
             response.setHeader("error", mess);
-            response.setStatus(FORBIDDEN.value());
+            response.setStatus(UNAUTHORIZED.value());
             Map<String, String> error = new HashMap<>();
-            error.put("error_message", mess);
+            error.put("type", "invalid_token");
             response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
             new ObjectMapper().writeValue(response.getOutputStream(), error);
-
         }
         return false;
     }

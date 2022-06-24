@@ -1,4 +1,4 @@
-package com.shop.web.rest;
+package com.shop.web.rest.admin;
 
 import com.shop.errors.BadRequestAlertException;
 import com.shop.errors.ProductAliasAlreadyUsedException;

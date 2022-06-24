@@ -1,4 +1,4 @@
-package com.shop.web.rest;
+package com.shop.web.rest.admin;
 
 import com.shop.model.Brand;
 import com.shop.model.Category;

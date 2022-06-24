@@ -1,5 +1,6 @@
-package com.shop.web.rest;
+package com.shop.web.rest.admin;
 
+import com.shop.errors.UsernameAlreadyUsedException;
 import com.shop.share.Constants;
 import com.shop.share.HeaderUtil;
 import com.shop.share.PaginationUtil;
@@ -9,7 +10,7 @@ import com.shop.repository.UserRepository;
 import com.shop.security.AuthoritiesConstants;
 import com.shop.errors.EmailAlreadyUsedException;
 import com.shop.service.Impl.UserServiceImpl;
-import com.shop.service.dto.AdminUserDTO;
+import com.shop.service.dto.user.AdminUserDTO;
 import com.shop.errors.BadRequestAlertException;
 import com.shop.errors.LoginAlreadyUsedException;
 import com.shop.web.rest.vm.ManagedUserVM;
@@ -68,7 +69,7 @@ public class UserResource {
         if (userDTO.getId() != null) {
             throw new BadRequestAlertException("A new user cannot already have an ID");
         } else if (userRepository.findOneByUsername(userDTO.getUsername().toLowerCase()).isPresent()) {
-            throw new LoginAlreadyUsedException();
+            throw new UsernameAlreadyUsedException();
         } else if (userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()).isPresent()) {
             throw new EmailAlreadyUsedException();
         } else {
@@ -92,7 +93,7 @@ public class UserResource {
         }
         existingUser = userRepository.findOneByUsername(userDTO.getUsername());
         if (existingUser.isPresent() && (!checkIdForUpdate(existingUser, userDTO))) {
-            throw new LoginAlreadyUsedException();
+            throw new UsernameAlreadyUsedException();
         }
         Optional<AdminUserDTO> updatedUser = userService.updateUser(userDTO);
         return ResponseUtil.wrapOrNotFound(

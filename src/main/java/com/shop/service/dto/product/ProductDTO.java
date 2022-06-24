@@ -38,12 +38,12 @@ public class ProductDTO extends AbstractProductDTO {
     }
 
 
-    public ProductDTO (Product product) {
+    public ProductDTO(Product product) {
         this.id = product.getId();
         this.name = product.getName();
         this.alias = product.getAlias();
-        this.shortDescription = product.getShortDescription();
-        this.fullDescription = product.getFullDescription();
+        this.shortDescription = product.getShortDescription().replaceAll("<[^>]*>", "");
+        this.fullDescription = product.getFullDescription().replaceAll("<[^>]*>", "");
         this.createdTime = product.getCreatedTime();
         this.updatedTime = product.getUpdatedTime();
         this.enabled = product.isEnabled();

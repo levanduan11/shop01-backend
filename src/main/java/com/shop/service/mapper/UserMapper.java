@@ -2,8 +2,8 @@ package com.shop.service.mapper;
 
 import com.shop.model.Authority;
 import com.shop.model.User;
-import com.shop.service.dto.AdminUserDTO;
-import com.shop.service.dto.UserDTO;
+import com.shop.service.dto.user.AdminUserDTO;
+import com.shop.service.dto.user.UserDTO;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
