@@ -40,9 +40,10 @@ public class JwtEntryPoint implements AuthenticationEntryPoint, AccessDeniedHand
 //        //errors.put("Login_error","please check password or username !!!");
 //        errors.put("error_key",authException.getMessage());
 //        response.setStatus(HttpServletResponse.SC_ACCEPTED);
-//        new ObjectMapper().writeValue(response.getOutputStream(),errors);
+   //  new ObjectMapper().writeValue(response.getOutputStream(),authException.getMessage());
         resolver.resolveException(request, response, null, authException);
-       // response.sendError(HttpServletResponse.SC_ACCEPTED, authException.getMessage());
+      // response.sendError(HttpServletResponse.SC_ACCEPTED, authException.getMessage());
+
 
     }
 

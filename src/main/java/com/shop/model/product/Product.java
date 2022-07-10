@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.shop.model.Brand;
 import com.shop.model.Category;
 import com.shop.model.IDBased;
+import org.hibernate.search.annotations.*;
+
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,16 +17,20 @@ import java.util.Set;
 @Table(name = "products")
 @NamedEntityGraphs(
         {@NamedEntityGraph(name = "product.list",
-                            attributeNodes = {@NamedAttributeNode("category"),
-                                    @NamedAttributeNode("brand"),
-                                    @NamedAttributeNode("images"),
-                                    @NamedAttributeNode("details")})}
+                attributeNodes = {@NamedAttributeNode(value = "category", subgraph = "category"),
+                        @NamedAttributeNode("brand"),
+                        @NamedAttributeNode("images"),
+                        @NamedAttributeNode("details")},
+                subgraphs = {@NamedSubgraph(name = "category", attributeNodes = {@NamedAttributeNode(value = "children")})}
+        )}
 
 )
+@Indexed
 public class Product extends IDBased implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Column(unique = true, nullable = false, length = 255)
+    @Column(unique = true, nullable = false, length = 255,name = "name")
+    @Field(termVector = TermVector.YES,analyze = Analyze.YES,store = Store.NO)
     private String name;
 
     @Column(unique = true, nullable = false, length = 255)
@@ -39,6 +45,7 @@ public class Product extends IDBased implements Serializable {
     private Instant updatedTime;
     private boolean enabled = true;
     private boolean inStock;
+    private int unitsInStock;
     private double cost;
     private double price;
 
@@ -132,6 +139,14 @@ public class Product extends IDBased implements Serializable {
 
     public void setInStock(boolean inStock) {
         this.inStock = inStock;
+    }
+
+    public int getUnitsInStock() {
+        return unitsInStock;
+    }
+
+    public void setUnitsInStock(int unitsInStock) {
+        this.unitsInStock = unitsInStock;
     }
 
     public double getCost() {
@@ -243,6 +258,11 @@ public class Product extends IDBased implements Serializable {
         productDetail.setName(name);
         productDetail.setValue(value);
         this.details.add(productDetail);
+    }
+
+    @Transient
+    public String getTest(){
+        return "test";
     }
 
     @Override

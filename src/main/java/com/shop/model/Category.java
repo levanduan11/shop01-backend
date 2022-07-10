@@ -11,14 +11,14 @@ import java.util.Set;
 @Table(name = "categories")
 @NamedEntityGraphs(
         {
-                @NamedEntityGraph(name = "com.shop.category", attributeNodes = @NamedAttributeNode(value = "children"))
+                @NamedEntityGraph(name = "com.shop.category", attributeNodes = {@NamedAttributeNode(value = "children"), @NamedAttributeNode(value = "parent")})
         }
 )
 public class Category extends IDBased implements Serializable {
-    private static final long serialVersionUID= 1L;
+    private static final long serialVersionUID = 1L;
     @Column(nullable = false, unique = true)
     private String name;
-    @Column( unique = true)
+    @Column(unique = true)
     private String alias;
     private String image;
     private boolean enabled = true;
@@ -34,7 +34,6 @@ public class Category extends IDBased implements Serializable {
 
     public Category() {
     }
-
 
 
     public String getName() {
