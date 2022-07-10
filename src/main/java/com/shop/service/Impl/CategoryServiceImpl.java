@@ -4,7 +4,6 @@ import com.shop.errors.CategoryNotFoundException;
 import com.shop.model.Category;
 import com.shop.repository.CategoryRepository;
 import com.shop.service.ICategoryService;
-import com.shop.service.dto.category.CategoryClientDTO;
 import com.shop.service.dto.category.CategoryDTO;
 import com.shop.service.dto.category.CategoryNode;
 import com.shop.service.dto.category.CategoryParentDTO;
@@ -227,12 +226,7 @@ public class CategoryServiceImpl implements ICategoryService {
                 }));
     }
 
-    public List<CategoryClientDTO> forDisplayClient() {
-        return categoryRepository.findAllByParentIdIsNull()
-                .stream()
-                .map(CategoryClientDTO::new)
-                .collect(Collectors.toList());
-    }
+
 
     private List<CategoryParentDTO> treeCategory(Category root) {
         Stack<Category> stack = new Stack<>();

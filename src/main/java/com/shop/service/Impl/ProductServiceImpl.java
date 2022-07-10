@@ -13,12 +13,20 @@ import com.shop.service.dto.product.ProductDTO;
 import com.shop.service.dto.product.ProductDetailDTO;
 import com.shop.service.dto.product.ProductForListDTO;
 import com.shop.service.dto.product.ProductImageDTO;
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
@@ -32,16 +40,19 @@ public class ProductServiceImpl implements IProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final BrandRepository brandRepository;
+    @Autowired
+    private EntityManager entityManager;
 
-    public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, BrandRepository brandRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, BrandRepository brandRepository, EntityManager entityManager) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.brandRepository = brandRepository;
+
     }
 
     @Override
     public Product create(ProductDTO productDTO) {
-        log.debug("create product {} ",productDTO);
+        log.debug("create product {} ", productDTO);
         Optional<Product> existingName = productRepository.findByName(productDTO.getName());
         if (existingName.isPresent()) {
             throw new ProductNameAlreadyUsedException();
@@ -238,6 +249,31 @@ public class ProductServiceImpl implements IProductService {
                 .stream()
                 .map(ProductForListDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    public Page<ProductDTO> search(String keyword, Pageable pageable) {
+        return productRepository.search(keyword, pageable).map(ProductDTO::new);
+    }
+
+    @Transactional
+    public Page<ProductDTO> fullTextSearch(String keyword, Pageable pageable) throws InterruptedException {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+        // fullTextEntityManager.createIndexer().startAndWait();
+        QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
+                .buildQueryBuilder()
+                .forEntity(Product.class)
+                .get();
+        org.apache.lucene.search.Query query = queryBuilder
+                .keyword()
+                //.wildcard()
+                .onFields("name")
+                .matching(keyword)
+                .createQuery();
+        org.hibernate.search.jpa.FullTextQuery fullTextQuery = fullTextEntityManager.createFullTextQuery(query, Product.class);
+        List<Product> products = fullTextQuery.getResultList();
+        List<ProductDTO> productDTOS = products.stream().map(ProductDTO::new).collect(Collectors.toList());
+        Page<ProductDTO> page = new PageImpl<>(productDTOS, pageable, productDTOS.size());
+        return page;
     }
 
     @Override
