@@ -78,6 +78,7 @@ public class UserServiceImpl implements IUserService {
                 .map(user -> {
                     user.setActivated(true);
                     user.setActivationKey(null);
+                    userRepository.save(user);
                     return user;
                 });
     }
@@ -92,6 +93,7 @@ public class UserServiceImpl implements IUserService {
                     user.setPassword(passwordEncoder.encode(newPassword));
                     user.setResetKey(null);
                     user.setResetDate(null);
+                    userRepository.save(user);
                     return user;
                 });
     }
@@ -104,6 +106,7 @@ public class UserServiceImpl implements IUserService {
                 .map(user -> {
                     user.setResetKey(generateKey(33));
                     user.setResetDate(Instant.now());
+                    userRepository.save(user);
                     return user;
                 });
     }
@@ -136,8 +139,8 @@ public class UserServiceImpl implements IUserService {
             newUser.setEmail(userDTO.getEmail().toLowerCase());
         }
         newUser.setImageUrl(userDTO.getImageUrl());
-        newUser.setActivated(true);
-        newUser.setActivationKey(null);
+        newUser.setActivated(false);
+        newUser.setActivationKey(generateKey(33));
         Set<Authority> authorities = new HashSet<>();
         authorityRepository.findByName(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);

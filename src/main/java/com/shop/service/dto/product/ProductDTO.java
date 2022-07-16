@@ -20,6 +20,7 @@ public class ProductDTO extends AbstractProductDTO {
     private String fullDescription;
 
     private boolean inStock;
+    private int unitsInStock;
     private double cost;
     private double price;
 
@@ -48,6 +49,7 @@ public class ProductDTO extends AbstractProductDTO {
         this.updatedTime = product.getUpdatedTime();
         this.enabled = product.isEnabled();
         this.inStock = product.isInStock();
+        this.unitsInStock=product.getUnitsInStock();
         this.cost = product.getCost();
         this.price = product.getPrice();
         this.discountPercent = product.getDiscountPercent();
@@ -179,5 +181,11 @@ public class ProductDTO extends AbstractProductDTO {
         this.imageDTOS = imageDTOS;
     }
 
+    public int getUnitsInStock() {
+        return unitsInStock;
+    }
 
+    public void setUnitsInStock(int unitsInStock) {
+        this.unitsInStock = unitsInStock;
+    }
 }

@@ -37,4 +37,6 @@ public class AccountControllerAdvice {
         message.setType(EXISTS_EMAIL);
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
+
+
 }

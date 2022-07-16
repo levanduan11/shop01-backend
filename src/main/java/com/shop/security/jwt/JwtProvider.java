@@ -28,7 +28,7 @@ public class JwtProvider {
     private static final Logger log = LoggerFactory.getLogger(JwtProvider.class);
 
     public static final String JWT_SECRET = "duan777@gmail.com";
-    public static final long accessTokenValidityInMilliseconds = 1800l * 1000;//30 p
+    public static final long accessTokenValidityInMilliseconds = 86400l * 1000;//1d
     private static final long refreshTokenValidityInMilliseconds = 30 * 60 * 100000;
 
     private static final long tokenValidityInMillisecondsForRememberMe = 2592000l * 1000;//30d;

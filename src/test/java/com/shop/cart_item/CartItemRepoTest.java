@@ -41,7 +41,6 @@ public class CartItemRepoTest {
         cartItem.setName(product.getName());
         cartItem.setPrice(product.getPrice());
         cartItem.setImageUrl(product.getMainImage());
-        cartItem.setUnitsInStock(product.getUnitsInStock());
         cartItem.setQuantity(9);
         cartItem.setCustomer(user);
         cartItem.setProduct(product);

@@ -101,6 +101,7 @@ public class ProductServiceImpl implements IProductService {
         product.setFullDescription(productDTO.getFullDescription());
         product.setEnabled(productDTO.isEnabled());
         product.setInStock(productDTO.isInStock());
+        product.setUnitsInStock(productDTO.getUnitsInStock());
         product.setCost(productDTO.getCost());
         product.setPrice(productDTO.getPrice());
         product.setDiscountPercent(productDTO.getDiscountPercent());
@@ -180,6 +181,9 @@ public class ProductServiceImpl implements IProductService {
                     if (productDTO.isInStock()) {
                         product.setInStock(productDTO.isInStock());
                     }
+                    if (productDTO.getUnitsInStock() != 0) {
+                        product.setUnitsInStock(productDTO.getUnitsInStock());
+                    }
                     if (productDTO.getCost() != 0) {
                         product.setCost(productDTO.getCost());
                     }
@@ -258,7 +262,7 @@ public class ProductServiceImpl implements IProductService {
     @Transactional
     public Page<ProductDTO> fullTextSearch(String keyword, Pageable pageable) throws InterruptedException {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
-        // fullTextEntityManager.createIndexer().startAndWait();
+        fullTextEntityManager.createIndexer().startAndWait();
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory()
                 .buildQueryBuilder()
                 .forEntity(Product.class)
