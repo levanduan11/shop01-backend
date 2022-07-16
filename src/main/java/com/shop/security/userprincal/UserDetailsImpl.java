@@ -52,7 +52,8 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return user.isActivated();
+        //return user.isActivated();
+        return true;
     }
 
     public String getFullName(){
