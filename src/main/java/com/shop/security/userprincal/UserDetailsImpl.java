@@ -52,11 +52,11 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        //return user.isActivated();
-        return true;
+        return user.isActivated();
+        // return true;
     }
 
-    public String getFullName(){
-        return user.getFirstName()+" "+user.getLastName();
+    public String getFullName() {
+        return user.getFirstName() + " " + user.getLastName();
     }
 }
