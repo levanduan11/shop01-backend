@@ -25,7 +25,8 @@ public class MailService {
     private static final String USER = "user";
 
     private static final String BASE_URL = "baseUrl";
-    private static final String CLIENT_URL="http://localhost:4200";
+    //private static final String CLIENT_URL="http://localhost:4200";
+    private static final String CLIENT_URL="https://duan-shop.netlify.app";
     private final JavaMailSender javaMailSender;
     private final MessageSource messageSource;
     private final SpringTemplateEngine templateEngine;
