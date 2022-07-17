@@ -64,7 +64,7 @@ public class User extends IDBased implements Serializable {
     private Instant createdDate=Instant.now();
 
     @JsonIgnore
-    @ManyToMany
+    @ManyToMany(fetch =FetchType.EAGER )
     @JoinTable(
             name = "user_authority",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
